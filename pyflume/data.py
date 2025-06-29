@@ -38,7 +38,7 @@ class FlumeData:
         flume_auth,
         device_id,
         device_tz,
-        scan_interval,
+        scan_interval=None,
         update_on_init=True,
         http_session=None,
         timeout=DEFAULT_TIMEOUT,
@@ -52,7 +52,7 @@ class FlumeData:
             flume_auth: Authentication object.
             device_id: flume device id.
             device_tz: timezone of device
-            scan_interval: duration of scan, ex: 60 minutes.
+            scan_interval: duration of scan, ex: 60 minutes. Forces using built in query_payload
             update_on_init: update on initialization.
             http_session: Requests Session()
             timeout: Requests timeout for throttling.
@@ -72,6 +72,7 @@ class FlumeData:
             )
         else:
             self.query_payload = query_payload
+        
         if http_session is None:
             self._http_session = Session()
         else:
@@ -96,10 +97,11 @@ class FlumeData:
 
     def update_force(self):
         """Return updated value for session without auto retry or limits."""
-        self.query_payload = self._generate_api_query_payload(
-            self._scan_interval,
-            self.device_tz,
-        )
+        if self._scan_interval is not None:
+            self.query_payload = self._generate_api_query_payload(
+                self._scan_interval,
+                self.device_tz,
+            )
 
         url = API_QUERY_URL.format(
             user_id=self._flume_auth.user_id,
