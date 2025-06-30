@@ -135,6 +135,8 @@ class FlumeData:
             if len(responses[key]) == 1:
                 # Step 4: Assign the value to the dictionary if the condition is met
                 values_dict[key] = responses[key][0]["value"]
+            elif len(responses[key]) > 1:
+                values_dict[key] = responses[key][0]
             else:
                 # Step 5: Assign None to the dictionary if the condition is not met
                 values_dict[key] = None
